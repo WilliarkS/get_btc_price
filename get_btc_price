@@ -1,0 +1,65 @@
+import requests
+from telegram.ext import Updater, CommandHandler
+
+# Замените на ваш токен бота
+TOKEN = 'YOUR_TELEGRAM_BOT_TOKEN'
+
+def start(update, context):
+    update.message.reply_text('Привет! Я финансовый бот. Напишите /btc для получения текущего курса Bitcoin.')
+
+def get_btc_price(update, context):
+    # Получаем текущий курс Bitcoin через API CoinGecko
+    response = requests.get('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd')
+    if response.status_code == 200:
+        btc_price = response.json()['bitcoin']['usd']
+        update.message.reply_text(f'Текущий курс Bitcoin (BTC) к USD: ${btc_price}')
+    else:
+        update.message.reply_text('Не удалось получить информацию о курсе Bitcoin. Попробуйте позже.')
+
+def main():
+    updater = Updater(TOKEN, use_context=True)
+    dp = updater.dispatcher
+
+    dp.add_handler(CommandHandler('start', start))
+    dp.add_handler(CommandHandler('btc', get_btc_price))
+
+    updater.start_polling()
+    updater.idle()
+
+if __name__ == '__main__':
+    main()
+import requests
+
+# Функция для получения баланса криптовалюты по адресу кошелька
+def get_wallet_balance(wallet_address, currency):
+    url = f'https://api.coingecko.com/api/v3/simple/token_price/ethereum?contract_addresses={wallet_address}&vs_currencies={currency}'
+    
+    response = requests.get(url)
+    if response.status_code == 200:
+        data = response.json()
+        balance = data[wallet_address.lower()][currency.lower()]
+        return balance
+    else:
+        return None
+
+# Пример использования функции для получения баланса Ethereum на адресе кошелька
+wallet_address = '0x1c7bb86514cE7e1763a4411bb8e91E6eC82A8e5d'  # Замените на свой адрес кошелька
+currency = 'eth'  # Валюта (например, 'eth' для Ethereum)
+balance = get_wallet_balance(wallet_address, currency)
+if balance:
+    print(f"Баланс на адресе {wallet_address}: {balance} {currency.upper()}")
+else:
+    print("Не удалось получить баланс")
+# Функция для выполнения транзакции отправки криптовалюты
+def send_crypto_transaction(sender_address, receiver_address, amount, currency):
+    # Ваш код здесь для отправки транзакции
+    pass
+
+# Пример использования функции для отправки криптовалюты
+sender_address = 'SENDER_WALLET_ADDRESS'  # Адрес отправителя
+receiver_address = 'RECEIVER_WALLET_ADDRESS'  # Адрес получателя
+amount = 0.5  # Сумма для отправки
+currency = 'eth'  # Валюта (например, 'eth' для Ethereum)
+
+send_crypto_transaction(sender_address, receiver_address, amount, currency)
+
